@@ -22,6 +22,32 @@ class TranspileResult(BaseModel):
     sql: str
 
 
+class ColumnReference(BaseModel):
+    column: str
+    table: str | None
+    fully_qualified: str
+
+
+class ColumnReferencesResult(BaseModel):
+    isValid: bool
+    message: str
+    columns: list[ColumnReference]
+
+
+class TableReference(BaseModel):
+    catalog: str | None
+    db: str | None
+    table: str
+    alias: str | None
+    fully_qualified: str
+
+
+class TableReferencesResult(BaseModel):
+    isValid: bool
+    message: str
+    tables: list[TableReference]
+
+
 def _parse(sql: str, dialect: str) -> tuple[Expression | None, ParseResult]:
     """Parse SQL and return AST and any errors"""
     ast = None
@@ -103,7 +129,9 @@ def transpile_sql(
 
 
 @mcp.tool()
-def get_all_table_references(sql: str, dialect: str = "") -> list[str] | ParseResult:
+def get_all_table_references(
+    sql: str, dialect: str = ""
+) -> TableReferencesResult | ParseResult:
     """
     Extract table names from SQL statement
 
@@ -111,40 +139,72 @@ def get_all_table_references(sql: str, dialect: str = "") -> list[str] | ParseRe
         sql: SQL statement to analyze
         dialect: Optional SQL dialect (e.g., 'mysql', 'postgresql')
     Returns:
-        comma-separated list of table names or syntax error message
+        JSON object containing tables with catalog, database, and alias attributes
     """
     ast, errors = _parse(sql, dialect)
     if not errors.isValid:
         return errors
 
-    root = build_scope(ast)
-    objects = [
-        source
-        for scope in root.traverse()
-        for alias, (node, source) in scope.selected_sources.items()
-        if isinstance(source, exp.Table)
-    ]
+    table_refs = []
 
-    return [".".join(map(str, obj.parts)) for obj in objects]
+    root = build_scope(ast)
+    for scope in root.traverse():
+        for alias, (node, source) in scope.selected_sources.items():
+            if isinstance(source, exp.Table):
+                table_alias = source.alias if source.alias != source.name else None
+                fully_qualified = ".".join(map(str, source.parts))
+
+                table_refs.append(
+                    TableReference(
+                        catalog=source.catalog,
+                        db=source.db,
+                        table=source.name,
+                        alias=table_alias,
+                        fully_qualified=fully_qualified,
+                    )
+                )
+
+    return TableReferencesResult(
+        isValid=True,
+        message="No syntax errors",
+        tables=table_refs,
+    )
 
 
 @mcp.tool()
-def get_all_column_references(sql: str, dialect: str = "") -> list[str] | ParseResult:
+def get_all_column_references(
+    sql: str, dialect: str = ""
+) -> ColumnReferencesResult | ParseResult:
     """
-    Extract column names from SQL statement
+    Extract column references from SQL statement with table context
 
     Args:
         sql: SQL statement to analyze
         dialect: Optional SQL dialect (e.g., 'mysql', 'postgresql')
     Returns:
-        comma-separated list of column names or syntax error message
+        JSON object containing column references with table context and any errors
     """
     ast, errors = _parse(sql, dialect)
     if not errors.isValid:
         return errors
 
     columns = ast.find_all(exp.Column)
-    return [".".join(map(str, col.parts)) for col in columns]
+    column_refs = []
+
+    for col in columns:
+        column = col.name
+        table = col.table
+        fully_qualified = f"{table}.{column}" if table else column
+
+        column_refs.append(
+            ColumnReference(column=column, table=table, fully_qualified=fully_qualified)
+        )
+
+    return ColumnReferencesResult(
+        isValid=True,
+        message="No syntax errors",
+        columns=column_refs,
+    )
 
 
 @mcp.resource("dialects://all")
