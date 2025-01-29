@@ -1,5 +1,6 @@
 import sqlglot
 from pydantic import BaseModel
+from typing import Literal
 from sqlglot import parse_one, exp
 from sqlglot.expressions import Expression
 from sqlglot.optimizer.scope import build_scope
@@ -35,6 +36,7 @@ class ColumnReferencesResult(BaseModel):
 
 
 class TableReference(BaseModel):
+    type: Literal["table", "cte"]
     catalog: str | None
     db: str | None
     table: str
@@ -133,13 +135,14 @@ def get_all_table_references(
     sql: str, dialect: str = ""
 ) -> TableReferencesResult | ParseResult:
     """
-    Extract table names from SQL statement
+    Extract table and CTE names from SQL statement
 
     Args:
         sql: SQL statement to analyze
         dialect: Optional SQL dialect (e.g., 'mysql', 'postgresql')
     Returns:
         JSON object containing tables with catalog, database, and alias attributes
+        CTEs are returned as "cte" type
     """
     ast, errors = _parse(sql, dialect)
     if not errors.isValid:
@@ -156,6 +159,7 @@ def get_all_table_references(
 
                 table_refs.append(
                     TableReference(
+                        type="table",
                         catalog=source.catalog,
                         db=source.db,
                         table=source.name,
@@ -163,6 +167,18 @@ def get_all_table_references(
                         fully_qualified=fully_qualified,
                     )
                 )
+
+    for cte in ast.find_all(exp.CTE):
+        table_refs.append(
+            TableReference(
+                type="cte",
+                catalog="",
+                db="",
+                table=cte.alias_or_name,
+                alias="",
+                fully_qualified=cte.alias_or_name,
+            )
+        )
 
     return TableReferencesResult(
         isValid=True,

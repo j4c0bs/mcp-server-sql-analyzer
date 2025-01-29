@@ -15,6 +15,7 @@ from mcp_server_sql_analyzer.server import (
             "",
             [
                 TableReference(
+                    type="table",
                     catalog="",
                     db="",
                     table="users",
@@ -22,6 +23,7 @@ from mcp_server_sql_analyzer.server import (
                     fully_qualified="users",
                 ),
                 TableReference(
+                    type="table",
                     catalog="",
                     db="",
                     table="orders",
@@ -35,6 +37,7 @@ from mcp_server_sql_analyzer.server import (
             "",
             [
                 TableReference(
+                    type="table",
                     catalog="",
                     db="",
                     table="products",
@@ -42,11 +45,20 @@ from mcp_server_sql_analyzer.server import (
                     fully_qualified="products",
                 ),
                 TableReference(
+                    type="table",
                     catalog="",
                     db="",
                     table="categories",
                     alias="",
                     fully_qualified="categories",
+                ),
+                TableReference(
+                    type="cte",
+                    catalog="",
+                    db="",
+                    table="cte",
+                    alias="",
+                    fully_qualified="cte",
                 ),
             ],
         ),
@@ -59,6 +71,7 @@ from mcp_server_sql_analyzer.server import (
             "",
             [
                 TableReference(
+                    type="table",
                     catalog="",
                     db="schema1",
                     table="table1",
@@ -66,6 +79,7 @@ from mcp_server_sql_analyzer.server import (
                     fully_qualified="schema1.table1",
                 ),
                 TableReference(
+                    type="table",
                     catalog="",
                     db="schema2",
                     table="table2",
