@@ -1,6 +1,6 @@
 # mcp-server-sql-analyzer
 
-A Model Context Protocol (MCP) server that provides SQL analysis, linting, and dialect conversion capabilities using SQLGlot.
+A Model Context Protocol (MCP) server that provides SQL analysis, linting, and dialect conversion capabilities using [SQLGlot](https://sqlglot.com/sqlglot.html).
 
 ## Overview
 
