@@ -224,19 +224,19 @@ def get_all_column_references(
 
 
 @mcp.resource("dialects://all")
-def list_sql_dialects() -> str:
+def list_sql_dialects() -> list[str]:
     """
     List all supported SQL dialects
 
     Returns:
-        comma-separated list of supported SQL dialects
+        list of supported SQL dialects
     """
     dialects = [
         name.lower()
         for name in sqlglot.dialects.Dialects._member_names_
-        if name != "DIALECT"
+        if name.lower() != "dialect"
     ]
-    return ", ".join(dialects)
+    return dialects
 
 
 def main():
