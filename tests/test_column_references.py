@@ -64,7 +64,7 @@ def test_get_all_column_references(
 ):
     result = get_all_column_references(sql, dialect)
     assert isinstance(result, ColumnReferencesResult)
-    assert result.isValid
+    assert result.is_valid
     assert result.message == "No syntax errors"
     assert len(result.columns) == len(expected_columns)
     for actual, expected in zip(result.columns, expected_columns):
@@ -74,4 +74,4 @@ def test_get_all_column_references(
 def test_get_all_column_references_with_error():
     result = get_all_column_references("SELECT id FROM")  # Missing table reference
     assert isinstance(result, ParseResult)
-    assert not result.isValid
+    assert not result.is_valid

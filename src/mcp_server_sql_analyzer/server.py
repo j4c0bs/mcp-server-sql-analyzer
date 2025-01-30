@@ -10,13 +10,13 @@ mcp = FastMCP("SQL Analyzer")
 
 
 class ParseResult(BaseModel):
-    isValid: bool
+    is_valid: bool
     message: str
     position: dict[str, int] | None
 
 
 class TranspileResult(BaseModel):
-    isValid: bool
+    is_valid: bool
     message: str
     read_dialect: str
     write_dialect: str
@@ -30,7 +30,7 @@ class ColumnReference(BaseModel):
 
 
 class ColumnReferencesResult(BaseModel):
-    isValid: bool
+    is_valid: bool
     message: str
     columns: list[ColumnReference]
 
@@ -45,7 +45,7 @@ class TableReference(BaseModel):
 
 
 class TableReferencesResult(BaseModel):
-    isValid: bool
+    is_valid: bool
     message: str
     tables: list[TableReference]
 
@@ -56,14 +56,14 @@ def _parse(sql: str, dialect: str) -> tuple[Expression | None, ParseResult]:
     try:
         ast = parse_one(sql, dialect=dialect)
         result = ParseResult(
-            isValid=True,
+            is_valid=True,
             message="No syntax errors",
             position=None,
         )
     except sqlglot.errors.ParseError as e:
         errors = e.errors[0]
         result = ParseResult(
-            isValid=False,
+            is_valid=False,
             message=str(e),
             position={"line": errors["line"], "column": errors["col"]},
         )
@@ -104,7 +104,7 @@ def transpile_sql(
         transpiled SQL or syntax error
     """
     _, errors = _parse(sql, read_dialect)
-    if not errors.isValid:
+    if not errors.is_valid:
         return errors
 
     transpiled_sql = ""
@@ -122,7 +122,7 @@ def transpile_sql(
         message = str(e)
 
     return TranspileResult(
-        isValid=is_valid,
+        is_valid=is_valid,
         message=message,
         read_dialect=read_dialect,
         write_dialect=write_dialect,
@@ -145,7 +145,7 @@ def get_all_table_references(
         CTEs are returned as "cte" type
     """
     ast, errors = _parse(sql, dialect)
-    if not errors.isValid:
+    if not errors.is_valid:
         return errors
 
     table_refs = []
@@ -181,7 +181,7 @@ def get_all_table_references(
         )
 
     return TableReferencesResult(
-        isValid=True,
+        is_valid=True,
         message="No syntax errors",
         tables=table_refs,
     )
@@ -201,7 +201,7 @@ def get_all_column_references(
         JSON object containing column references with table context and any errors
     """
     ast, errors = _parse(sql, dialect)
-    if not errors.isValid:
+    if not errors.is_valid:
         return errors
 
     columns = ast.find_all(exp.Column)
@@ -217,7 +217,7 @@ def get_all_column_references(
         )
 
     return ColumnReferencesResult(
-        isValid=True,
+        is_valid=True,
         message="No syntax errors",
         columns=column_refs,
     )

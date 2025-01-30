@@ -38,7 +38,7 @@ Update your personal preferences in Claude Desktop settings to request that gene
      - sql (string): SQL query to analyze
      - dialect (string, optional): SQL dialect (e.g., 'mysql', 'postgresql')
    - Returns: ParseResult containing:
-     - isValid (boolean): Whether the SQL is valid
+     - is_valid (boolean): Whether the SQL is valid
      - message (string): Error message or "No syntax errors"
      - position (object, optional): Line and column of error if present
 
@@ -49,7 +49,7 @@ Update your personal preferences in Claude Desktop settings to request that gene
      - read_dialect (string): Source SQL dialect
      - write_dialect (string): Target SQL dialect
    - Returns: TranspileResult containing:
-     - isValid (boolean): Whether transpilation succeeded
+     - is_valid (boolean): Whether transpilation succeeded
      - message (string): Error message or success confirmation
      - sql (string): Transpiled SQL if successful
 
@@ -59,7 +59,7 @@ Update your personal preferences in Claude Desktop settings to request that gene
      - sql (string): SQL statement to analyze
      - dialect (string, optional): SQL dialect
    - Returns: TableReferencesResult containing:
-     - isValid (boolean): Whether analysis succeeded
+     - is_valid (boolean): Whether analysis succeeded
      - message (string): Status message
      - tables (array): List of table references with type, catalog, database, table name, alias, and fully qualified name
 
@@ -69,7 +69,7 @@ Update your personal preferences in Claude Desktop settings to request that gene
      - sql (string): SQL statement to analyze
      - dialect (string, optional): SQL dialect
    - Returns: ColumnReferencesResult containing:
-     - isValid (boolean): Whether analysis succeeded
+     - is_valid (boolean): Whether analysis succeeded
      - message (string): Status message
      - columns (array): List of column references with column name, table name, and fully qualified name
 

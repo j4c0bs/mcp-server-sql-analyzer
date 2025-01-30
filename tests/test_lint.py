@@ -8,13 +8,13 @@ from mcp_server_sql_analyzer.server import lint_sql, ParseResult
         (
             "SELECT * FROM users",
             "",
-            ParseResult(isValid=True, message="No syntax errors", position=None),
+            ParseResult(is_valid=True, message="No syntax errors", position=None),
         ),
         (
             "SELECT * FROM users WHERE",
             "",
             ParseResult(
-                isValid=False,
+                is_valid=False,
                 message="",
                 position=None,
             ),
@@ -22,18 +22,18 @@ from mcp_server_sql_analyzer.server import lint_sql, ParseResult
         (
             "SELECT * FROM users;",  # With semicolon
             "",
-            ParseResult(isValid=True, message="No syntax errors", position=None),
+            ParseResult(is_valid=True, message="No syntax errors", position=None),
         ),
         (
             "SELECT * FROM users LIMIT 5",
             "postgres",  # Test with specific dialect
-            ParseResult(isValid=True, message="No syntax errors", position=None),
+            ParseResult(is_valid=True, message="No syntax errors", position=None),
         ),
         (
             "SELEC * FROM users",  # Misspelled SELECT
             "",
             ParseResult(
-                isValid=False,
+                is_valid=False,
                 message="",
                 position=None,
             ),
@@ -42,7 +42,7 @@ from mcp_server_sql_analyzer.server import lint_sql, ParseResult
 )
 def test_lint_sql(sql: str, dialect: str, expected: ParseResult):
     result = lint_sql(sql, dialect)
-    assert result.isValid == expected.isValid
+    assert result.is_valid == expected.is_valid
 
 
 def test_lint_sql_with_complex_query():
@@ -60,6 +60,6 @@ def test_lint_sql_with_complex_query():
     LIMIT 10
     """
     result = lint_sql(sql)
-    assert result.isValid
+    assert result.is_valid
     assert result.message == "No syntax errors"
     assert result.position is None

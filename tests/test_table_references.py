@@ -95,7 +95,7 @@ def test_get_all_table_references(
 ):
     result = get_all_table_references(sql, dialect)
     assert isinstance(result, TableReferencesResult)
-    assert result.isValid
+    assert result.is_valid
     assert result.message == "No syntax errors"
     assert len(result.tables) == len(expected_tables)
     for actual, expected in zip(result.tables, expected_tables):
@@ -105,4 +105,4 @@ def test_get_all_table_references(
 def test_get_all_table_references_with_error():
     result = get_all_table_references("SELECT * FORM users")  # Misspelled FROM
     assert isinstance(result, ParseResult)
-    assert not result.isValid
+    assert not result.is_valid
