@@ -1,3 +1,10 @@
+.DS_Store
+.vscode/
+.ruff_cache/
+.cursor/
+.cursorrules
+.cursorignore
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
