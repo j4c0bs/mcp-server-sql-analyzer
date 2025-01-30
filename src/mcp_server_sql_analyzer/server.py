@@ -5,6 +5,7 @@ from sqlglot import parse_one, exp
 from sqlglot.expressions import Expression
 from sqlglot.optimizer.scope import build_scope
 from mcp.server.fastmcp import FastMCP
+from sqlglot.dialects.dialect import Dialects
 
 mcp = FastMCP("SQL Analyzer")
 
@@ -50,8 +51,21 @@ class TableReferencesResult(BaseModel):
     tables: list[TableReference]
 
 
+def _valid_dialect(dialect: str) -> bool:
+    if not dialect:
+        return True
+    return len({dialect.lower(), dialect.upper()} & set(Dialects.__members__)) > 0
+
+
 def _parse(sql: str, dialect: str) -> tuple[Expression | None, ParseResult]:
     """Parse SQL and return AST and any errors"""
+    if not _valid_dialect(dialect):
+        return None, ParseResult(
+            is_valid=False,
+            message=f"Unsupported dialect: {dialect}",
+            position=None,
+        )
+
     ast = None
     try:
         ast = parse_one(sql, dialect=dialect)
@@ -106,6 +120,13 @@ def transpile_sql(
     _, errors = _parse(sql, read_dialect)
     if not errors.is_valid:
         return errors
+
+    if not _valid_dialect(write_dialect):
+        return ParseResult(
+            is_valid=False,
+            message=f"Unsupported write dialect: {write_dialect}",
+            position=None,
+        )
 
     transpiled_sql = ""
     try:
@@ -231,12 +252,7 @@ def list_sql_dialects() -> list[str]:
     Returns:
         list of supported SQL dialects
     """
-    dialects = [
-        name.lower()
-        for name in sqlglot.dialects.Dialects._member_names_
-        if name.lower() != "dialect"
-    ]
-    return dialects
+    return [d.value for d in Dialects if d.value]
 
 
 def main():
