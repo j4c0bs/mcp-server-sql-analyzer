@@ -93,7 +93,7 @@ def lint_sql(sql: str, dialect: str = "") -> ParseResult:
 
     Args:
         sql: SQL query to analyze
-        dialect: Optional SQL dialect (e.g., 'mysql', 'postgresql')
+        dialect: Optional SQL dialect (e.g., 'mysql', 'postgres')
 
     Returns:
         error message or "No syntax errors" if parsing succeeds
@@ -160,7 +160,7 @@ def get_all_table_references(
 
     Args:
         sql: SQL statement to analyze
-        dialect: Optional SQL dialect (e.g., 'mysql', 'postgresql')
+        dialect: Optional SQL dialect (e.g., 'mysql', 'postgres')
     Returns:
         JSON object containing tables with catalog, database, and alias attributes
         CTEs are returned as "cte" type
@@ -217,7 +217,7 @@ def get_all_column_references(
 
     Args:
         sql: SQL statement to analyze
-        dialect: Optional SQL dialect (e.g., 'mysql', 'postgresql')
+        dialect: Optional SQL dialect (e.g., 'mysql', 'postgres')
     Returns:
         JSON object containing column references with table context and any errors
     """
