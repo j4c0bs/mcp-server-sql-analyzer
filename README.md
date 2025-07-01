@@ -36,7 +36,7 @@ Update your personal preferences in Claude Desktop settings to request that gene
    - Validates SQL query syntax and returns any errors
    - Input:
      - sql (string): SQL query to analyze
-     - dialect (string, optional): SQL dialect (e.g., 'mysql', 'postgresql')
+     - dialect (string, optional): SQL dialect (e.g., 'mysql', 'postgres')
    - Returns: ParseResult containing:
      - is_valid (boolean): Whether the SQL is valid
      - message (string): Error message or "No syntax errors"
